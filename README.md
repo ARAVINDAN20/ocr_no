@@ -1,9 +1,9 @@
 pip install -r requirment.txt
 
-without ui 
+#without ui 
 python3 main.py 1.jpg
 
-with ui
+#with ui
 streamlit run app.py
 
 
