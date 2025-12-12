@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANPR Live Dashboard | Vehicle Detection System</title>
+    <meta name="description"
+        content="Real-time vehicle detection dashboard with license plate recognition, speed tracking, and lane monitoring">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="bg-gradient"></div>
+        <div class="bg-grid"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h1>ANPR Dashboard</h1>
+                        <span class="subtitle">Real-time Vehicle Detection</span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="status-indicator" id="connectionStatus">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Connecting...</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="time-display" id="currentTime">--:--:--</div>
+                <div class="download-buttons">
+                    <button class="btn-download csv" id="downloadCSV" title="Download CSV">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        <span>CSV</span>
+                    </button>
+                    <button class="btn-download json" id="downloadJSON" title="Download JSON">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        <span>JSON</span>
+                    </button>
+                </div>
+                <button class="btn-clear" id="clearBtn" title="Clear All Data">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Left Column: Video Feed + Stats -->
+            <div class="left-column">
+                <!-- Video Feed Card -->
+                <div class="card video-card">
+                    <div class="card-header">
+                        <h2>Live Video Feed</h2>
+                        <div class="live-badge">
+                            <span class="live-dot"></span>
+                            LIVE
+                        </div>
+                    </div>
+                    <div class="video-container">
+                        <img src="/video_feed" alt="Live Video Feed" id="videoFeed">
+                        <div class="video-overlay">
+                            <div class="overlay-stats">
+                                <span id="overlayTotal">0</span> vehicles detected
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards Row -->
+                <div class="stats-grid">
+                    <!-- Total Vehicles -->
+                    <div class="stat-card total">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10.5V5a2 2 0 00-2-2H8a2 2 0 00-2 2v5.5l-2.5.6C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2" />
+                                <circle cx="7" cy="17" r="2" />
+                                <circle cx="17" cy="17" r="2" />
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="totalVehicles">0</div>
+                            <div class="stat-label">Total Vehicles</div>
+                        </div>
+                    </div>
+
+                    <!-- Lane 1 -->
+                    <div class="stat-card lane1">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="lane1Count">0</div>
+                            <div class="stat-label">Lane 1</div>
+                        </div>
+                    </div>
+
+                    <!-- Lane 2 -->
+                    <div class="stat-card lane2">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="lane2Count">0</div>
+                            <div class="stat-label">Lane 2</div>
+                        </div>
+                    </div>
+
+                    <!-- Average Speed -->
+                    <div class="stat-card speed">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 6v6l4 2" />
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value"><span id="avgSpeed">0</span><small> km/h</small></div>
+                            <div class="stat-label">Avg Speed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Filters + Table + Charts -->
+            <div class="right-column">
+                <!-- Filter Card -->
+                <div class="card filter-card">
+                    <div class="card-header">
+                        <h2>Filters</h2>
+                        <button class="btn-reset" id="resetFilters">Reset</button>
+                    </div>
+                    <div class="filter-grid">
+                        <div class="filter-group">
+                            <label>Vehicle Type</label>
+                            <div class="filter-buttons" id="typeFilter">
+                                <button class="filter-btn active" data-value="all">All</button>
+                                <button class="filter-btn" data-value="Car">Car</button>
+                                <button class="filter-btn" data-value="Bike">Bike</button>
+                                <button class="filter-btn" data-value="Bus">Bus</button>
+                                <button class="filter-btn" data-value="Truck">Truck</button>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Lane</label>
+                            <div class="filter-buttons" id="laneFilter">
+                                <button class="filter-btn active" data-value="all">Both</button>
+                                <button class="filter-btn lane1-btn" data-value="Lane 1">Lane 1</button>
+                                <button class="filter-btn lane2-btn" data-value="Lane 2">Lane 2</button>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Search Plate</label>
+                            <div class="search-input">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <path d="M21 21l-4.35-4.35" />
+                                </svg>
+                                <input type="text" id="plateSearch" placeholder="Enter plate number...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Table Card -->
+                <div class="card table-card">
+                    <div class="card-header">
+                        <h2>Vehicle Detections</h2>
+                        <div class="table-header-actions">
+                            <span class="record-count" id="recordCount">0 records</span>
+                            <div class="export-dropdown">
+                                <button class="btn-export" id="exportBtn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg>
+                                    Export
+                                </button>
+                                <div class="dropdown-menu" id="exportDropdown">
+                                    <button class="dropdown-item" id="exportCSVBtn">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                                            <polyline points="14 2 14 8 20 8" />
+                                            <line x1="16" y1="13" x2="8" y2="13" />
+                                            <line x1="16" y1="17" x2="8" y2="17" />
+                                            <polyline points="10 9 9 9 8 9" />
+                                        </svg>
+                                        Download as CSV
+                                    </button>
+                                    <button class="dropdown-item" id="exportJSONBtn">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                                            <polyline points="14 2 14 8 20 8" />
+                                            <line x1="16" y1="13" x2="8" y2="13" />
+                                            <line x1="16" y1="17" x2="8" y2="17" />
+                                            <polyline points="10 9 9 9 8 9" />
+                                        </svg>
+                                        Download as JSON
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="vehicleTable">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Type</th>
+                                    <th>Number Plate</th>
+                                    <th>Speed</th>
+                                    <th>Lane</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vehicleTableBody">
+                                <tr class="empty-row">
+                                    <td colspan="5">
+                                        <div class="empty-state">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path
+                                                    d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9L18 10.5V5a2 2 0 00-2-2H8a2 2 0 00-2 2v5.5l-2.5.6C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2" />
+                                                <circle cx="7" cy="17" r="2" />
+                                                <circle cx="17" cy="17" r="2" />
+                                            </svg>
+                                            <p>Waiting for vehicles...</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="charts-grid">
+                    <!-- Vehicle Type Distribution -->
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h3>Vehicle Types</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="typeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Lane Comparison -->
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h3>Lane Comparison</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="laneChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Speed Distribution -->
+                    <div class="card chart-card wide">
+                        <div class="card-header">
+                            <h3>Speed Distribution</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="speedChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Timeline -->
+                    <div class="card chart-card wide">
+                        <div class="card-header">
+                            <h3>Vehicles Over Time</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="timelineChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/static/js/dashboard.js"></script>
+</body>
+
+</html>

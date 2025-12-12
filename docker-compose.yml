@@ -1,0 +1,47 @@
+# =============================================================================
+# ANPR Live Dashboard - Docker Compose Configuration
+# Simplifies running the application with a single command
+# =============================================================================
+
+version: '3.8'
+
+services:
+  anpr-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: anpr-dashboard
+    ports:
+      - "5001:5001"
+    volumes:
+      # Mount video file for processing (optional - video is included in image)
+      # - ./1.mp4:/app/1.mp4:ro
+      # Mount models directory (optional - models are included in image)
+      # - ./models:/app/models:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    # For GPU support (NVIDIA), uncomment the following:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+# =============================================================================
+# USAGE:
+#
+# Build and run:
+#   docker-compose up --build
+#
+# Run in background:
+#   docker-compose up -d
+#
+# Stop:
+#   docker-compose down
+#
+# View logs:
+#   docker-compose logs -f
+# =============================================================================

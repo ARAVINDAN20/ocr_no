@@ -11,7 +11,7 @@ plate_detector_model = YOLO('./models/license_plate_detector.pt')
 mot_tracker = Sort()
 
 # load video
-cap = cv.VideoCapture('./demo_1.mp4')
+cap = cv.VideoCapture('./1.mp4')
 
 vehicle_ids = [2, 3, 5, 7]
 results = {}

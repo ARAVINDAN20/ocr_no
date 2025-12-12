@@ -1,0 +1,23 @@
+# Ignore large files for Docker
+*.csv
+test_interpolated.csv
+__pycache__/
+*.pyc
+*.pyo
+.git
+.gitignore
+*.md
+!README.md
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+venv/
+env/
+.env
+*.egg-info/
+dist/
+build/

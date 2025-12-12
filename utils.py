@@ -4,7 +4,7 @@ import PIL
 
 PIL.Image.ANTIALIAS = PIL.Image.LANCZOS
 
-reader = easyocr.Reader(['en'], gpu=False)
+reader = easyocr.Reader(['en'], gpu=True)
 
 # dictionaries for character conversion ambiguities?
 dict_char_to_int = {'O': '0',

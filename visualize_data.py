@@ -6,14 +6,14 @@ import pandas as pd
 # read interpolated data
 res = pd.read_csv('./test_interpolated.csv')
 
-cap = cv.VideoCapture('demo_1.mp4')
+cap = cv.VideoCapture('1.mp4')
 
 # load video to write
 fourcc = cv.VideoWriter.fourcc(*'mp4v')
 fps = cap.get(cv.CAP_PROP_FPS)
 width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
-output = cv.VideoWriter('./output.mp4', fourcc, fps, (width, height))
+output = cv.VideoWriter('./out.mp4', fourcc, fps, (width, height))
 
 license_plate = {}
 
