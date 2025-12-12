@@ -45,45 +45,133 @@ The dashboard includes:
 The easiest way to run the application on **Windows**, **macOS**, or **Linux**.
 
 #### Prerequisites
-- [Docker](https://docs.docker.com/get-docker/) installed on your system
+- [Docker Desktop](https://docs.docker.com/get-docker/) installed on your system
+- A traffic video file (MP4 format)
 
-#### Run with Docker Compose (Simplest)
-
-```bash
-# Clone the repository
-git clone https://github.com/ARAVINDAN20/ocr_no.git
-cd ocr_no
-
-# Switch to test branch
-git checkout test
-
-# ⚠️ IMPORTANT: Add your video file
-# Place your traffic video as '1.mp4' in the project directory
-# Video should be 1920x1080 resolution with visible vehicles
-
-# Build and run with a single command
-docker-compose up --build
-```
-
-#### Run with Docker CLI
+#### One-Line Command (All Platforms)
 
 ```bash
-# Build the image
-docker build -t anpr-dashboard .
-
-# Run the container
-docker run -p 5001:5001 anpr-dashboard
-```
-
-#### Access the Dashboard
-Open your browser and navigate to:
-```
-http://localhost:5001
+git clone https://github.com/ARAVINDAN20/ocr_no.git && cd ocr_no && git checkout test && docker-compose up --build
 ```
 
 ---
 
-### Option 2: Local Installation 🐍
+### 🍎 macOS Instructions
+
+#### Step 1: Install Docker Desktop
+```bash
+# Option A: Download from Docker website
+# https://docs.docker.com/desktop/install/mac-install/
+
+# Option B: Install via Homebrew
+brew install --cask docker
+```
+
+#### Step 2: Clone and Run
+```bash
+# Open Terminal (Cmd + Space, type "Terminal")
+
+# Clone the repository
+git clone https://github.com/ARAVINDAN20/ocr_no.git
+cd ocr_no
+git checkout test
+
+# Add your traffic video (rename your video to 1.mp4)
+cp /path/to/your/video.mp4 ./1.mp4
+
+# Build and run
+docker-compose up --build
+
+# Open browser
+open http://localhost:5001
+```
+
+#### macOS One-Liner (Run in Background)
+```bash
+git clone https://github.com/ARAVINDAN20/ocr_no.git && cd ocr_no && git checkout test && docker-compose up --build -d && open http://localhost:5001
+```
+
+#### macOS Troubleshooting
+| Issue | Solution |
+|-------|----------|
+| "docker: command not found" | Open Docker Desktop app first |
+| "Cannot connect to Docker daemon" | Click 🐳 in menu bar → Start Docker |
+| Slow build | Normal on first run (~10-15 mins) |
+
+---
+
+### 🐧 Linux Instructions
+
+#### Step 1: Install Docker
+```bash
+# Ubuntu/Debian
+sudo apt-get update
+sudo apt-get install docker.io docker-compose
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Add user to docker group (optional, to run without sudo)
+sudo usermod -aG docker $USER
+```
+
+#### Step 2: Clone and Run
+```bash
+# Clone the repository
+git clone https://github.com/ARAVINDAN20/ocr_no.git
+cd ocr_no
+git checkout test
+
+# Add your traffic video
+cp /path/to/your/video.mp4 ./1.mp4
+
+# Build and run (use sudo if not in docker group)
+sudo docker-compose up --build
+
+# Open browser
+xdg-open http://localhost:5001
+```
+
+#### Linux One-Liner
+```bash
+git clone https://github.com/ARAVINDAN20/ocr_no.git && cd ocr_no && git checkout test && sudo docker-compose up --build
+```
+
+---
+
+### 🪟 Windows Instructions
+
+#### Step 1: Install Docker Desktop
+1. Download from [Docker Desktop for Windows](https://docs.docker.com/desktop/install/windows-install/)
+2. Run the installer and restart your computer
+3. Open Docker Desktop and wait for it to start
+
+#### Step 2: Clone and Run
+```powershell
+# Open PowerShell or Command Prompt
+
+# Clone the repository
+git clone https://github.com/ARAVINDAN20/ocr_no.git
+cd ocr_no
+git checkout test
+
+# Add your traffic video (copy your video as 1.mp4 to this folder)
+copy C:\path\to\your\video.mp4 .\1.mp4
+
+# Build and run
+docker-compose up --build
+```
+
+#### Windows One-Liner (PowerShell)
+```powershell
+git clone https://github.com/ARAVINDAN20/ocr_no.git; cd ocr_no; git checkout test; docker-compose up --build
+```
+
+#### Access the Dashboard
+Open your browser: **http://localhost:5001**
+
+---
+
+### Option 2: Local Installation (Without Docker) 🐍
 
 #### Prerequisites
 - Python 3.10 or higher
@@ -96,6 +184,7 @@ http://localhost:5001
 # Clone the repository
 git clone https://github.com/ARAVINDAN20/ocr_no.git
 cd ocr_no
+git checkout test
 
 # Create virtual environment (recommended)
 python -m venv venv
@@ -109,11 +198,14 @@ source venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
+# Add your video file as 1.mp4
+
 # Run the application
 python speed_lane_dashboard.py
 ```
 
 ---
+
 
 ## 📁 Project Structure
 
