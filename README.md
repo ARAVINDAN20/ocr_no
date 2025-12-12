@@ -57,6 +57,10 @@ cd ocr_no
 # Switch to test branch
 git checkout test
 
+# ⚠️ IMPORTANT: Add your video file
+# Place your traffic video as '1.mp4' in the project directory
+# Video should be 1920x1080 resolution with visible vehicles
+
 # Build and run with a single command
 docker-compose up --build
 ```
